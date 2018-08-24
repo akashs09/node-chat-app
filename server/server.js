@@ -8,6 +8,6 @@ const publicPath = path.join(__dirname, '../public');
 
 app.use(express.static(publicPath)); //configure our express static middleware
 
-app.listen(3000, () => {
+app.listen(port, () => {
   console.log(`node-chat-app serving up port ${port}`);
 });
