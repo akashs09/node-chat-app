@@ -2,21 +2,12 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title> </title>
+    <title> Index </title>
   </head>
   <body>
     <p>Welcome to the chat app</p>
     <p>index2</p>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-    <script>
-      let socket = io(); //requests connection to server
-      socket.on('connect', () => {
-        console.log('connected to server');
-      });
-      socket.on('disconnect', () => {
-        console.log('disconnected from server');
-      });
-
-    </script> <!-- this creates our connection, stores socket in a var, listens for data from server and send data to server
+    <script src="/js/index.js"> </script> <!-- this creates our connection, stores socket in a var, listens for data from server and send data to server -->
   </body>
 </html>
