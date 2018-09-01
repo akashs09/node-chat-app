@@ -16,16 +16,28 @@ app.use(express.static(publicPath)); //configure our express static middleware
 
 io.on('connection', (socket) => { //socket refers to the individual
   console.log('New user connected.'); //register for connected client to server
-
+  socket.emit('newMessage', {
+    from: "Admin",
+    text: "Welcome to the node-chat-room"
+  });
+  socket.broadcast.emit('newMessage', {
+    from: 'Admin',
+    text: 'New user has joined'
+  });
 
   socket.on('createMessage', (newMessage)=>{
     console.log('createEmail', newMessage);
-    io.emit('newMessage', { //io.emit emits a message to every single connection
-      from: newMessage.from,
-      text: newMessage.text,
-      createdAt: new Date().getTime()
+    // io.emit('newMessage', { //io.emit emits a message to every single connection
+    //   from: newMessage.from,
+    //   text: newMessage.text,
+    //   createdAt: new Date().getTime()
+    // })
+    // socket.broadcast.emit('newMessage', {
+    //   from: newMessage.from,
+    //   text: newMessage.text,
+    //   createdAt: new Date().getTime()
     })
-  });
+
 
   socket.on('disconnect', () =>{
     console.log('client disconnected');
