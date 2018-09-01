@@ -17,14 +17,14 @@ app.use(express.static(publicPath)); //configure our express static middleware
 io.on('connection', (socket) => { //socket refers to the individual
   console.log('New user connected.'); //register for connected client to server
 
-  socket.emit('newEmail', {
-    from: 'mike@example.com',
-    text: 'Hey. What is going on.',
-    createdAt: 123
-  });
 
   socket.on('createMessage', (newMessage)=>{
     console.log('createEmail', newMessage);
+    io.emit('newMessage', { //io.emit emits a message to every single connection
+      from: newMessage.from,
+      text: newMessage.text,
+      createdAt: new Date().getTime()
+    })
   });
 
   socket.on('disconnect', () =>{
