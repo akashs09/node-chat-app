@@ -4,7 +4,7 @@ const http = require('http');
 const express = require('express');
 const port = process.env.PORT || 3000;
 const socketIO = require('socket.io');
-
+const {generateMessage} = require('./utils/message');
 
 const publicPath = path.join(__dirname, '../public');
 
@@ -16,22 +16,12 @@ app.use(express.static(publicPath)); //configure our express static middleware
 
 io.on('connection', (socket) => { //socket refers to the individual
   console.log('New user connected.'); //register for connected client to server
-  socket.emit('newMessage', {
-    from: "Admin",
-    text: "Welcome to the node-chat-room"
-  });
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'New user has joined'
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome to the node-chat-room'))  ;
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user has joined'));
 
   socket.on('createMessage', (newMessage)=>{
     console.log('createEmail', newMessage);
-    // io.emit('newMessage', { //io.emit emits a message to every single connection
-    //   from: newMessage.from,
-    //   text: newMessage.text,
-    //   createdAt: new Date().getTime()
-    // })
+    io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
     // socket.broadcast.emit('newMessage', {
     //   from: newMessage.from,
     //   text: newMessage.text,
