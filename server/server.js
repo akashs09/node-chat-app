@@ -22,7 +22,7 @@ io.on('connection', (socket) => { //socket refers to the individual
   socket.on('createMessage', (newMessage, callback)=>{
     console.log('createEmail', newMessage);
     io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
-    callback('this is from server');
+    callback();
     // socket.broadcast.emit('newMessage', {
     //   from: newMessage.from,
     //   text: newMessage.text,
