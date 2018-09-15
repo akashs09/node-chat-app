@@ -34,9 +34,13 @@ io.on('connection', (socket) => { //socket refers to the individual
     socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`));
     callback()
   });
-  socket.on('createMessage', (newMessage, callback)=>{
-    console.log('createEmail', newMessage);
-    io.emit('newMessage', generateMessage(newMessage.from, newMessage.text));
+  socket.on('createMessage', (message, callback)=>{
+    let user = users.getUser(socket.id);
+
+    if (user && isRealString(message.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text));
+    }
+
     callback();
     // socket.broadcast.emit('newMessage', {
     //   from: newMessage.from,
@@ -45,8 +49,11 @@ io.on('connection', (socket) => { //socket refers to the individual
     })
 
   socket.on('createLocationMessage', (coords, callback) => {
-    console.log('createMessage', coords);
-    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude));
+    let user = users.getUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude));
+    }
   });
 
   socket.on('disconnect', () =>{
