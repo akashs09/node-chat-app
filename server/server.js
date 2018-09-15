@@ -7,13 +7,14 @@ const socketIO = require('socket.io');
 // const mustache
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation');
-
+const {Users} = require('./utils/users');
 const publicPath = path.join(__dirname, '../public');
 
 
 const app = express(); //app will create routes, run middleware and listen
 const server = http.createServer(app);
 const io = socketIO(server); //returns websocket server
+let users = new Users();
 app.use(express.static(publicPath)); //configure our express static middleware
 
 io.on('connection', (socket) => { //socket refers to the individual
@@ -22,10 +23,13 @@ io.on('connection', (socket) => { //socket refers to the individual
   // socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user has joined'));
   socket.on('join', (params, callback) =>   {
     if (!isRealString(params.name) || !isRealString(params.room)) {
-      callback('Name and room are required.');
+      return callback('Name and room are required.');
     }
     //just emit chat messages just to ppl in a certain room
     socket.join(params.room);//now have a group to ppl to talk in teh same room
+    users.removeUser(socket.id);
+    users.addUser(socket.id,params.name,params.room);
+    io.to(params.room).emit('updateUserList', users.getUserList(params.room));
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the node-chat-room'))  ;
     socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`));
     callback()
@@ -46,7 +50,12 @@ io.on('connection', (socket) => { //socket refers to the individual
   });
 
   socket.on('disconnect', () =>{
-    console.log('client disconnected');
+    let user = users.removeUser(socket.id);
+
+    if(user) {
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room)); // update user list
+      io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left`));
+    }
 });
 });
 
